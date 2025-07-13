@@ -1,7 +1,28 @@
 {% extends "base.html" %}
-{% block title %}시작하기 - 냉장고를 부탁해{% endblock %}
+{% block title %}냉장고를 부탁해{% endblock %}
+
 {% block content %}
-  <h1>🍽️ 냉장고를 부탁해~</h1>
-  <p>앱 사용을 시작하려면 아래 버튼을 눌러주세요.</p>
-  <a href="/upload"><button>시작하기</button></a>
+  <div class="start-screen" style="text-align: center;">
+    <!-- 로고 (static/icons 폴더의 아이콘) -->
+    <img
+      src="/static/icons/icon-192.png"
+      alt="Picook 로고"
+      style="width: 120px; height: 120px; object-fit: contain; margin: 0 auto 24px;"
+    />
+
+    <!-- 안내 문구 -->
+    <h2 style="font-size: 1.25rem; line-height: 1.4; margin-bottom: 32px;">
+      냉장고 속 음식을 분석해<br />
+      요리를 추천해드려요
+    </h2>
+
+    <!-- 시작하기 버튼 -->
+    <button
+      type="button"
+      onclick="location.href='/upload'"
+      style="width: 100%; max-width: 260px; margin: 0 auto; padding: 16px; font-size: 1rem; border-radius: 24px;"
+    >
+      사진 넣기
+    </button>
+  </div>
 {% endblock %}

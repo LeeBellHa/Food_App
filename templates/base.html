@@ -8,13 +8,36 @@
   <link rel="manifest" href="/static/manifest.json" />
   <link rel="apple-touch-icon" href="/static/icons/icon-192.png" />
 
+  <!-- 페이지 <title> -->
   <title>{% block title %}냉장고를 부탁해{% endblock %}</title>
-  <link rel="stylesheet" href="/static/style.css" />
+
+  <!-- 스타일시트 로드 -->
+  <link rel="stylesheet" href="/static/style.css?v=1.0.2" />
+
   {% block head %}{% endblock %}
 </head>
 <body>
-  <div class="container">
-    {% block content %}{% endblock %}
+  <div class="app-container">
+
+    <!-- 고정 헤더 -->
+    <header class="app-header" style="padding:16px; background:#fff; border-bottom:1px solid #eee;">
+      {% block header_title %}
+        <h1 style="text-align:center; margin:0;">냉장고를 부탁해</h1>
+      {% endblock %}
+    </header>
+
+    <!-- 스크롤 가능한 메인 -->
+    <main class="app-main">
+      <div class="container">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <!-- 고정 푸터 -->
+    <footer class="app-footer" style="padding:8px; text-align:center; background:#fafafa; border-top:1px solid #eee;">
+      &copy; 2025 Picook
+    </footer>
+
   </div>
 
   <script>

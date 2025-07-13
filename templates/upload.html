@@ -1,39 +1,141 @@
+{# templates/upload.html #}
 {% extends "base.html" %}
 {% block title %}사진 업로드 - 냉장고를 부탁해{% endblock %}
+
+{% block head %}
+<style>
+  /* ── 균일 크기 3×2 그리드 ── */
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 1em auto;
+    max-width: 600px;
+  }
+  .preview-grid .slot {
+    position: relative;
+    width: 100%;
+    padding-top: 75%;  /* 4:3 비율 */
+    background: #eee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .preview-grid .slot img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .preview-grid .slot button.delete {
+    position: absolute;
+    top: 4px; right: 4px;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    color: #fff;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  /* ── 버튼 그룹 ── */
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px auto;
+    max-width: 600px;
+  }
+  .btn {
+    display: block;
+    text-align: center;
+    background-color: #ff7043;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn:hover {
+    background-color: #e65c2f;
+  }
+  #images-input {
+    display: none;
+  }
+  h2 {
+    text-align: center;
+    margin-top: 16px;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-  <h2>📸 사진을 업로드하세요</h2>
-  <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
-    <div id="file-inputs"></div>
-    <button type="button" id="add-photo-btn">사진 추가</button>
-    <button type="submit">분석</button>
+  <h2>현재 가지고 있는 재료는</h2>
+
+  <form id="upload-form"
+        action="/upload"
+        method="post"
+        enctype="multipart/form-data">
+    <!-- 숨긴 파일 입력 -->
+    <input
+      type="file"
+      name="images"
+      id="images-input"
+      accept="image/*"
+      multiple
+      required
+    />
+
+    <!-- 균일한 3×2 그리드 -->
+    <div class="preview-grid" id="preview-container">
+      {% for _ in range(6) %}
+        <div class="slot"></div>
+      {% endfor %}
+    </div>
+
+    <!-- 버튼 그룹 -->
+    <div class="btn-group">
+      <label for="images-input" class="btn">카메라로 찍어서 사진 업로드</label>
+      <label for="images-input" class="btn">앨범에서 업로드</label>
+      <button type="submit" class="btn">분석</button>
+    </div>
   </form>
-  <div id="preview"></div>
 
   <script>
-    const fileInputs = document.getElementById('file-inputs');
-    const addBtn = document.getElementById('add-photo-btn');
-    const preview = document.getElementById('preview');
+    const inputEl = document.getElementById('images-input');
+    const slots  = Array.from(document.querySelectorAll('#preview-container .slot'));
+    let filesArr  = [];
 
-    addBtn.addEventListener('click', () => {
-      const inp = document.createElement('input');
-      inp.type = 'file';
-      inp.name = 'images';
-      inp.accept = 'image/*';
-      inp.style.display = 'none';
-      fileInputs.appendChild(inp);
-      inp.click();
+    function renderSlots() {
+      slots.forEach(s => s.innerHTML = '');
+      filesArr.forEach((file, idx) => {
+        const slot = slots[idx];
+        const url  = URL.createObjectURL(file);
+        const img  = document.createElement('img');
+        img.src    = url;
+        img.onload = () => URL.revokeObjectURL(url);
+        slot.appendChild(img);
 
-      inp.addEventListener('change', e => {
-        if (!e.target.files.length) return;
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = evt => {
-          const img = document.createElement('img');
-          img.src = evt.target.result;
-          preview.appendChild(img);
+        const btn = document.createElement('button');
+        btn.className = 'delete';
+        btn.textContent = '×';
+        btn.onclick = () => {
+          filesArr.splice(idx, 1);
+          renderSlots();
         };
-        reader.readAsDataURL(file);
+        slot.appendChild(btn);
       });
+    }
+
+    inputEl.addEventListener('change', e => {
+      const newFiles = Array.from(e.target.files);
+      filesArr = filesArr.concat(newFiles).slice(0, slots.length);
+      renderSlots();
+      // inputEl.value는 남겨두어야 폼 제출 시 파일 전송이 됩니다.
     });
   </script>
 {% endblock %}

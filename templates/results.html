@@ -2,14 +2,95 @@
 {% block title %}분석 결과 - 냉장고를 부탁해{% endblock %}
 {% block content %}
   <h2>🔍 분석된 재료 확인</h2>
-  <div>
+
+  <!-- 1) 4:3 프레임 안에 이미지가 꽉 차도록 -->
+  <div class="preview">
     {% for fn in filenames %}
       <img src="/static/uploads/{{ fn }}" alt="업로드 이미지">
     {% endfor %}
   </div>
-  <form action="/results" method="post">
-    <label>검출된 재료 (콤마로 구분):</label>
-    <textarea name="ingredients" rows="2" required>{{ ingredients|join(", ") }}</textarea>
-    <button type="submit">다음</button>
+
+  <!-- 2) 재료 리스트 & 수정/추가 -->
+  <form id="ingredients-form" action="/results" method="post">
+    <h3>냉장고 속 재료:</h3>
+    <ul id="ingredient-list"></ul>
+
+    <div style="margin:1em 0; display:flex; gap:0.5em;">
+      <input
+        type="text"
+        id="new-ingredient"
+        placeholder="+재료 추가하기"
+        style="flex:1;"
+      />
+      <button type="button" id="add-btn">추가</button>
+    </div>
+
+    <!-- 서버에 보낼 값 -->
+    <input
+      type="hidden"
+      name="ingredients"
+      id="ingredients-input"
+      value="{{ ingredients|join(',') }}"
+    />
+
+    <button type="submit" style="width:100%;">확인</button>
   </form>
+
+  <!-- 3) JS: raw 문자열 합치고 split → 개별 <li> 렌더 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const listEl   = document.getElementById('ingredient-list');
+      const newInput = document.getElementById('new-ingredient');
+      const addBtn   = document.getElementById('add-btn');
+      const hiddenIn = document.getElementById('ingredients-input');
+
+      // 1) 서버에서 받은 원본 배열을 하나의 문자열로 합치기
+      let raw = {{ ingredients|tojson|safe }};
+      let flat = Array.isArray(raw) ? raw.join(',') : (raw || '');
+
+      // 2) 하이픈(-) 혹은 콤마(,) 로 잘라서 배열화
+      let ingredients = flat
+        .split(/[-,]/g)
+        .map(s => s.trim())
+        .filter(s => s.length);
+
+      // 리스트 렌더 함수
+      function renderList() {
+        listEl.innerHTML = '';
+        ingredients.forEach((item, i) => {
+          const li = document.createElement('li');
+
+          const span = document.createElement('span');
+          span.textContent = item;
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = '삭제';
+          btn.addEventListener('click', () => {
+            ingredients.splice(i, 1);
+            renderList();
+          });
+
+          li.appendChild(span);
+          li.appendChild(btn);
+          listEl.appendChild(li);
+        });
+
+        // 변경된 리스트를 히든 필드에 저장
+        hiddenIn.value = ingredients.join(',');
+      }
+
+      // 추가 버튼 핸들러
+      addBtn.addEventListener('click', () => {
+        const v = newInput.value.trim();
+        if (!v) return;
+        ingredients.push(v);
+        newInput.value = '';
+        renderList();
+      });
+
+      // 최초 렌더
+      renderList();
+    });
+  </script>
 {% endblock %}

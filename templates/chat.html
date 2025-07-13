@@ -1,7 +1,56 @@
 {% extends "base.html" %}
 {% block title %}추천 레시피 - 냉장고를 부탁해{% endblock %}
+
+{% block head %}
+  <!-- marked.js CDN (반드시  marked.min.js 를 먼저 로드) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    .recipe-content h3 {
+      font-size: 1.3rem;
+      margin: 1.5rem 0 0.5rem;
+      color: #444;
+      border-bottom: 2px solid #ff7043;
+      display: inline-block;
+      padding-bottom: 4px;
+    }
+    .recipe-content ul,
+    .recipe-content ol {
+      margin: 0.5rem 0 1rem 1.5rem;
+      color: #333;
+    }
+    .recipe-content ul li {
+      margin-bottom: 0.25rem;
+    }
+    .recipe-content ol li {
+      margin: 0.75rem 0;
+    }
+    .btn-home {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      color: #ff7043;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <h2>👨‍🍳 추천 레시피</h2>
-  <pre style="white-space: pre-wrap;">{{ recipe }}</pre>
-  <a href="/"><button>처음으로</button></a>
+
+  <!-- Markdown → HTML 이 실제로 들어갈 영역 -->
+  <div class="recipe-content"></div>
+
+  <a href="/" class="btn-home">처음으로</a>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1) Jinja2 tojson 으로 안전하게 JS 문자열로 삽입
+      const raw = {{ recipe | tojson | safe }};
+      // 2) marked 로 Markdown → HTML 변환
+      const html = marked.parse(raw);
+      // 3) 변환된 HTML을 삽입
+      document.querySelector('.recipe-content').innerHTML = html;
+    });
+  </script>
 {% endblock %}

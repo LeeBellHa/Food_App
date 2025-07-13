@@ -1,76 +1,198 @@
-/* Reset */
-* {
+/* ────────────────────────────────────────
+   전역 레이아웃: 100vh flex container
+   ──────────────────────────────────────── */
+html, body {
+  height: 100%;
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
-
 body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
   background-color: #f9f9f9;
   color: #333;
+}
+
+/* 전체 앱 컨테이너 */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 헤더/푸터 고정 */
+.app-header,
+.app-footer {
+  flex-shrink: 0;
+}
+
+/* 메인(스크롤 영역) */
+.app-main {
+  flex: 1;
+  overflow-y: auto;         /* 메인 전체가 스크롤 영역 */
+  -webkit-overflow-scrolling: touch;
   padding: 20px;
 }
 
+/* 콘텐츠 박스: 높이 auto로 변경 */
 .container {
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
   background: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: block;
 }
 
+/* ==============================
+   Reset & 공통 스타일
+   ============================== */
+* {
+  box-sizing: border-box;
+}
 h1, h2 {
-  margin-bottom: 16px;
+  margin: 0 0 16px;
   color: #444;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-input[type="file"] {
-  margin-bottom: 16px;
-}
-
-textarea, select, input[type="text"] {
-  padding: 10px;
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-button {
+/* ==============================
+   버튼 스타일
+   ============================== */
+button, .btn {
   background-color: #ff7043;
   color: #fff;
   border: none;
   padding: 12px;
-  margin-top: 8px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s;
 }
-
-button:hover {
+button:hover, .btn:hover {
   background-color: #e65c2f;
 }
 
-#preview, .preview img {
-  display: inline-block;
-  margin: 6px;
-}
-
-#preview img {
-  max-width: 100px;
-  border: 1px solid #ddd;
+/* ==============================
+   입력 요소 스타일
+   ============================== */
+input[type="text"],
+textarea,
+select {
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
 
+/* ==============================
+   이미지 프레임 (4:3 비율)
+   ============================== */
+.preview,
+.upload-preview,
+.preview-grid .slot {
+  position: relative;
+  width: 100%;
+  padding-top: 75%;   /* 4:3 비율 */
+  background: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.preview img,
+.upload-preview img,
+.preview-grid .slot img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* ==============================
+   재료 리스트 (results.html)
+   ============================== */
+.ingredient-scroll {
+  max-height: calc(100vh - 300px); /* 필요에 따라 조정 */
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding-right: 4px;
+}
+#ingredient-list {
+  list-style: none;
+  padding-left: 0;
+}
+#ingredient-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+#ingredient-list li button {
+  background: none;
+  color: #ff7043;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+}
+
+/* ==============================
+   토글 태그 스타일 (style.html)
+   ============================== */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.tags input[type="checkbox"] {
+  display: none;
+}
+.tags label {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tags input[type="checkbox"]:checked + label {
+  background-color: #ff7043;
+  border-color: #ff7043;
+  color: #fff;
+}
+
+/* ==============================
+   레시피 콘텐츠 (chat.html)
+   ============================== */
+.recipe-content h3 {
+  font-size: 1.3rem;
+  margin: 1.5rem 0 0.5rem;
+  color: #444;
+  border-bottom: 2px solid #ff7043;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+.recipe-content ul,
+.recipe-content ol {
+  margin: 0.5rem 0 1rem 1.5rem;
+}
+.recipe-content ul li {
+  margin-bottom: 0.25rem;
+}
+.recipe-content ol li {
+  margin: 0.75rem 0;
+}
+
+/* ==============================
+   반응형
+   ============================== */
 @media (max-width: 480px) {
-  body { padding: 10px; }
-  .container { padding: 12px; }
-  button { width: 100%; }
+  .container {
+    padding: 12px;
+  }
+  button, .btn {
+    width: 100%;
+  }
 }
