@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}분석 결과 - 냉장고를 부탁해{% endblock %}
+{% block content %}
+  <h2>🔍 분석된 재료 확인</h2>
+  <div>
+    {% for fn in filenames %}
+      <img src="/static/uploads/{{ fn }}" alt="업로드 이미지">
+    {% endfor %}
+  </div>
+  <form action="/results" method="post">
+    <label>검출된 재료 (콤마로 구분):</label>
+    <textarea name="ingredients" rows="2" required>{{ ingredients|join(", ") }}</textarea>
+    <button type="submit">다음</button>
+  </form>
+{% endblock %}

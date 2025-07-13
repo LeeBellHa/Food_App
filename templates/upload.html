@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}사진 업로드 - 냉장고를 부탁해{% endblock %}
+{% block content %}
+  <h2>📸 사진을 업로드하세요</h2>
+  <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+    <div id="file-inputs"></div>
+    <button type="button" id="add-photo-btn">사진 추가</button>
+    <button type="submit">분석</button>
+  </form>
+  <div id="preview"></div>
+
+  <script>
+    const fileInputs = document.getElementById('file-inputs');
+    const addBtn = document.getElementById('add-photo-btn');
+    const preview = document.getElementById('preview');
+
+    addBtn.addEventListener('click', () => {
+      const inp = document.createElement('input');
+      inp.type = 'file';
+      inp.name = 'images';
+      inp.accept = 'image/*';
+      inp.style.display = 'none';
+      fileInputs.appendChild(inp);
+      inp.click();
+
+      inp.addEventListener('change', e => {
+        if (!e.target.files.length) return;
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = evt => {
+          const img = document.createElement('img');
+          img.src = evt.target.result;
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
+{% endblock %}

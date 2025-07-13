@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}스타일 선택 - 냉장고를 부탁해{% endblock %}
+{% block content %}
+  <h2>🍽️ 원하는 요리 스타일을 선택하세요</h2>
+  <form action="/style" method="post">
+    <label><input type="radio" name="recipe_type" value="한식" required> 한식</label><br>
+    <label><input type="radio" name="recipe_type" value="중식"> 중식</label><br>
+    <label><input type="radio" name="recipe_type" value="일식"> 일식</label><br>
+    <label><input type="radio" name="recipe_type" value="양식"> 양식</label><br>
+    <label><input type="radio" name="recipe_type" value="자취요리"> 자취요리</label><br>
+    <label><input type="radio" name="recipe_type" value="파티요리"> 파티요리</label><br>
+    <button type="submit">다음</button>
+  </form>
+{% endblock %}
